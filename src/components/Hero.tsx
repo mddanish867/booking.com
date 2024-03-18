@@ -12,7 +12,7 @@ const Hero = () => {
           Genius label.
         </p>
         <Link
-          to="/signup"
+          to="/signin"
           className="flex mt-5 min-h-12 bg-blue-600 items-center text-white px-3 font-medium rounded hover:bg-blue-500 w-40"
         >
           Sign in or register
