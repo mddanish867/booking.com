@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 const Header = () => {
   return (
     <div className="bg-blue-800 py-4">
-      <div className="container mx-auto flex justify-between">
-        <span className="text-3xl text-white font-semibold tracking-tight">
+      <div className="mx-auto flex justify-between">
+        <span className="text-2xl text-white font-semibold tracking-tight mx-20">
           <Link to="/">Booking.com</Link>
         </span>
         <span className="flex space-x-2">
@@ -20,8 +20,9 @@ const Header = () => {
             Register
           </Link>
           <Link
+          style={{marginRight:"93px"}}
             to="/signin"
-            className="flex bg-white items-center text-blue-600 px-3 font-medium rounded hover:bg-gray-100"
+            className="mr-24 flex bg-white items-center text-blue-600 px-3 font-medium rounded hover:bg-gray-100"
           >
             Sign in
           </Link>

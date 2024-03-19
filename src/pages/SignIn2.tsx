@@ -19,8 +19,8 @@ const signIn2 = () => {
     <>   
     
     <div className="bg-blue-800 py-4">
-        <div className="container mx-auto flex justify-between">
-          <span className="text-3xl text-white font-semibold tracking-tight">
+        <div className="mx-auto flex justify-between">
+          <span className="text-2xl text-white font-semibold tracking-tight mx-20">
             <Link to="/">Booking.com</Link>
           </span>
           <span className="flex space-x-2">
@@ -31,6 +31,7 @@ const signIn2 = () => {
               Register
             </Link>
             <Link
+            style={{marginRight:"93px"}}
               to="/signin"
               className="flex bg-white items-center text-blue-600 px-3 font-medium rounded hover:bg-gray-100"
             >
@@ -54,13 +55,17 @@ const signIn2 = () => {
         placeholder="Enter your password"
         {...register("password", {
           required: "Enter your Booking.com password",
+          minLength: {
+            value: 6,
+            message: "Password must be at least 6 characters",
+          },
         })}
       ></input>
       {errors.password && (
-        <span className="text-red-500 mr-44 text-sm">
-          {errors.password.message}
-        </span>
-      )}
+          <span className="text-red-500 mr-44 text-sm">
+            {errors.password.message}
+          </span>
+        )}
       <button className="border-stone-700 bg-blue-600 hover:bg-blue-900 text-white w-96 rounded h-12 text-center my-2 py-3">
         Sign in
       </button>
