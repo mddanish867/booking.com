@@ -1,5 +1,8 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useRegisterMutation } from "../../Api/authApi";
+import apiResponse from "../../Interfaces/apiResponse";
+import Header from "../../components/Header";
 
 export type RegisterFormData = {
   email: string;
@@ -8,6 +11,12 @@ export type RegisterFormData = {
 };
 
 const Register = () => {
+  const [isLoggedInUser] = useRegisterMutation();
+  const navigate = useNavigate(); 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const email = searchParams.get('email'); 
+  
   const {
     register,
     watch,
@@ -15,49 +24,44 @@ const Register = () => {
     formState: { errors },
   } = useForm<RegisterFormData>();
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
+  const onSubmit = handleSubmit(async(data) => { 
+    try {
+      const response : apiResponse = await isLoggedInUser({
+        email: email,
+        password: data.password
+      });      
+      if (response.data) {        
+        navigate("/signin");
+      } else {
+        // Proceed with registration
+        //toastNotify("Registration successful! Please login to continue!");
+        navigate(`/register?email=${encodeURIComponent(data.email)}`);
+      }
+    } catch (error) {
+      // Handle fetch error
+      console.error('Fetch error:', error);      
+    }
   });
 
   return (
     <>
       {/* Header */}
-      <div className="bg-blue-800 py-4">
-        <div className="mx-auto flex justify-between">
-          <span className="text-2xl text-white font-semibold tracking-tight mx-20">
-            <Link to="/">Booking.com</Link>
-          </span>
-          <span className="flex space-x-2">
-            <Link
-              to="/register"
-              className="flex bg-white items-center text-blue-600 px-3 font-medium rounded hover:bg-gray-100"
-            >
-              Register
-            </Link>
-            <Link
-            style={{marginRight:"93px"}}
-              to="/signin"
-              className="flex bg-white items-center text-blue-600 px-3 font-medium rounded hover:bg-gray-100"
-            >
-              Sign in
-            </Link>
-          </span>
-        </div>
-      </div>
+      <Header/>
       {/* Registration form */}
       <form className="py-5  flex flex-col items-center" onSubmit={onSubmit}>
-        <h1 className="text-lg font-bold" style={{ marginRight: "240px" }}>
+        <h1 className="text-lg font-bold" style={{ marginRight: "247px" }}>
           Create password
         </h1>
-        <p className="text-sm mb-10 mr-14">
+        <p className="text-sm mr-14">
           Use a minimum of 10 characters, including uppercase <br />
           letters, lowercase letters, and numbers.
         </p>
+        <p className="text-sm font-bold mb-8" style={{ marginRight: "211px" }}>{email}</p>
 
         <label className="text-left mr-80 font-semibold">Password</label>
         <input
           type="password"
-          className="w-96 focus:border-blue-600 focus:border-2 rounded h-9 px-2 my-2 border border-zinc-700 h-10 outline-none"
+          className="w-96 focus:border-blue-600 focus:border-2 rounded px-2 my-2 border border-zinc-700 h-10 outline-none"
           placeholder="Enter a password"
           {...register("password", {
             required: "Enter your Booking.com password",
@@ -78,7 +82,7 @@ const Register = () => {
         </label>
         <input
           type="password"
-          className="w-96 focus:border-blue-600 focus:border-2 rounded h-9 px-2 my-2 border border-zinc-700 h-10 outline-none"
+          className="w-96 focus:border-blue-600 focus:border-2 rounded px-2 my-2 border border-zinc-700 h-10 outline-none"
           placeholder="Confirm your password"
           {...register("confirmPassword", {
             validate: (val) => {

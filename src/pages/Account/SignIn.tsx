@@ -1,6 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useGetUserByEmailMutation } from "../../Api/authApi";
+import apiResponse from "../../Interfaces/apiResponse";
+import Header from "../../components/Header";
 
 export type SignFormData = {
   email: string;
@@ -9,49 +12,61 @@ export type SignFormData = {
 };
 
 const Signin = () => {
-  const [submission, setSubmission] = useState(false);
+  const [isEmailExists] = useGetUserByEmailMutation();
+
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // generate token
+  function generateToken(): string {
+    // Generate a UUID
+    const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+
+    // Remove hyphens from the UUID
+    const token = uuid.replace(/-/g, "");
+
+    return token;
+  }
+  // Example usage
+  const returnToken = generateToken();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SignFormData>();
 
-  const onSubmit = handleSubmit((data) => {
-    setSubmission(true);
-    console.log(data);
+  const onSubmit = handleSubmit(async (data) => {
+    setLoading(true);
+    try {
+      const response: apiResponse = await isEmailExists({ email: data.email });
+      if (response.error.originalStatus === 200) {
+        navigate(`/signin2?email=${data.email}&token=${returnToken}`);
+      } else {
+        // Proceed with registration
+        //toastNotify("Registration successful! Please login to continue!");
+        navigate(`/register?email=${data.email}&token=${returnToken}`);
+      }
+    } catch (error) {
+      // Handle fetch error
+      console.error("Fetch error:", error);
+      // Redirect to registration page
+      navigate(`/register?email=${data.email}&token=${returnToken}`);
+    }
+
+    setLoading(false);
   });
 
-  // Continue with email
-  const handleOnClick = () => {
-    if (submission) {
-      navigate("./Signin2");
-    }
-  };
   return (
     <>
-      <div className="bg-blue-800 py-4">
-        <div className="mx-auto flex justify-between">
-          <span className="text-2xl text-white font-semibold tracking-tight mx-20">
-            <Link to="/">Booking.com</Link>
-          </span>
-          <span className="flex space-x-2">
-            <Link
-              to="/register"
-              className="flex bg-white items-center text-blue-600 px-3 font-medium rounded hover:bg-gray-100"
-            >
-              Register
-            </Link>
-            <Link
-            style={{marginRight:"93px"}}
-              to="/signin"
-              className="flex bg-white items-center text-blue-600 px-3 font-medium rounded hover:bg-gray-100"
-            >
-              Sign in
-            </Link>
-          </span>
-        </div>
-      </div>
+      <Header/>
       <form className=" py-5  flex flex-col items-center" onSubmit={onSubmit}>
         <>
           <h1
@@ -62,7 +77,7 @@ const Signin = () => {
           </h1>
           <label className="text-left mr-72 font-semibold">Email address</label>
           <input
-            className="w-96 focus:border-blue-600 focus:border-2 rounded h-9 px-2 my-2 border border-zinc-700 h-10 outline-none"
+            className="w-96 focus:border-blue-600 focus:border-2 rounded px-2 my-2 border border-zinc-700 h-10 outline-none"
             type="email"
             placeholder="Enter your email address"
             {...register("email", { required: "Enter your email address" })}
@@ -72,10 +87,7 @@ const Signin = () => {
               {errors.email.message}
             </span>
           )}
-          <button
-            className="border-stone-700 bg-blue-600 hover:bg-blue-900 text-white w-96 rounded h-12 text-center my-2 py-3"
-            onClick={handleOnClick}
-          >
+          <button className="border-stone-700 bg-blue-600 hover:bg-blue-900 text-white w-96 rounded h-12 text-center my-2 py-3">
             Continue with email
           </button>
           <span className="mb-8">or use one of these options</span>
@@ -92,7 +104,7 @@ const Signin = () => {
                 viewBox="0 0 72 72"
                 id="facebook"
               >
-                <g fill="none" fill-rule="evenodd">
+                <g fill="none" fillRule="evenodd">
                   <g>
                     <rect width="72" height="72" fill="#385084" rx="4"></rect>
                     <path
