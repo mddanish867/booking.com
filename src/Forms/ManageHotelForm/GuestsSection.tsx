@@ -15,7 +15,7 @@ const GuestsSection = () => {
           <label className="text-gray-700 text-sm font-semibold">
             Adults
             <input
-              className="border rounded w-full py-2 px-3 font-normal"
+              className="border rounded w-full py-2 px-3 font-normal focus:border-blue-600 focus:border-2 outline-none"
               type="number"
               min={1}
               {...register("adultCount", {
@@ -33,7 +33,7 @@ const GuestsSection = () => {
           <label className="text-gray-700 text-sm font-semibold">
             Children
             <input
-              className="border rounded w-full py-2 px-3 font-normal"
+              className="border rounded w-full py-2 px-3 font-normal focus:border-blue-600 focus:border-2 outline-none"
               type="number"
               min={0}
               {...register("childCount", {
