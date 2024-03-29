@@ -11,7 +11,7 @@ export type RegisterFormData = {
 };
 
 const Register = () => {
-  const [isLoggedInUser] = useRegisterMutation();
+  const [registration] = useRegisterMutation();
   const navigate = useNavigate(); 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -26,7 +26,7 @@ const Register = () => {
 
   const onSubmit = handleSubmit(async(data) => { 
     try {
-      const response : apiResponse = await isLoggedInUser({
+      const response : apiResponse = await registration({
         email: email,
         password: data.password
       });      

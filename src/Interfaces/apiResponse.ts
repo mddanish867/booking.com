@@ -1,14 +1,13 @@
 export default interface apiResponse {
   data?: {
-    // this will give suggestion
-    statusCode?: number;
+    status?: number;
     isSuccess?: boolean;
     jwtToken?: Array<string>;
     errorMessage?: Array<string>;
-    result: {
-      // this will not give suggestions
+    user_id?: string; // Add message property
+    response: {
       [key: string]: string;
     };
   };
-  error?: any;
+  error?: any
 }

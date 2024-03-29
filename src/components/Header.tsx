@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const jwtToken = sessionStorage.getItem("jwtToken");
+  const isLoggedIn = sessionStorage.getItem("jwtToken");
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -17,14 +17,16 @@ const Header = () => {
   };
 
   // delete cookies
-  function deleteAuthToken() {
-    document.cookie = "jwtToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  function deleteAuthToken(name:string) {
+    document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; SameSite=None`;
   }
 
   // handle sign out and remove session storage
   const handleSignout = () => {
     sessionStorage.removeItem("jwtToken");
-    deleteAuthToken();
+    sessionStorage.removeItem("user-id");
+    deleteAuthToken("jwtToken");
+    deleteAuthToken("user-id");
     navigate("/");
   };
 
@@ -35,14 +37,14 @@ const Header = () => {
           <Link to="/">Booking.com</Link>
         </span>
         <div className="flex items-center space-x-4">         
-            <Link
-              to="/managehotelform"
+            <Link 
+              to={isLoggedIn ? "/addhotel" : "signin"}
               className="hidden md:inline-block text-white px-4 py-2 rounded font-medium hover:bg-blue-900"
             >
               List your property
             </Link>         
 
-          {jwtToken ? (
+          {isLoggedIn ? (
             <>
               <div className="relative inline-block text-left">
                 <button
@@ -71,9 +73,9 @@ const Header = () => {
                   </div>
                   <ul className="py-2 text-sm text-gray-700">
                     <li>
-                      <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                        Dashboard
-                      </a>
+                      <Link to="/myhotels" className="block px-4 py-2 hover:bg-gray-100">
+                        My Hotel
+                      </Link>
                     </li>
                     <li>
                       <a href="#" className="block px-4 py-2 hover:bg-gray-100">

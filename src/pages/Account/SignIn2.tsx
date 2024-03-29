@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLoginUserMutation } from "../../Api/authApi";
-import { useState } from "react";
 import apiResponse from "../../Interfaces/apiResponse";
 import toastNotify from "../../Helper/toastNotify";
 import Header from "../../components/Header";
@@ -14,7 +13,6 @@ export interface RouteParams {
 }
 const signIn2 = () => {
   const [loggedInUser] = useLoginUserMutation();
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -44,7 +42,6 @@ const signIn2 = () => {
   } = useForm<SignFormData>();
 
   const onSubmit = handleSubmit(async (data) => {
-    setLoading(true);
     try {
       const response: apiResponse = await loggedInUser({
         email: email,
@@ -53,10 +50,14 @@ const signIn2 = () => {
       if (response.data) {
         // Extract JWT token from the response
         const jwtToken = response.data.jwtToken;
-        // Save JWT token in session storage
+        const userId = response.data.user_id;
+        // Save JWT token and userId in session storage
         sessionStorage.setItem("jwtToken", jwtToken);
+        sessionStorage.setItem("user-id",userId)
         // Set JWT token in a cookie
-        document.cookie = `jwtToken=${jwtToken}; Secure; SameSite=None`;
+        document.cookie = `jwtToken=${jwtToken}; Secure; SameSite=None;`;
+        document.cookie = `user-id=${userId}; Secure; SameSite=None;`;
+
         toastNotify("Successfully logged in!");
         navigate(`/?token=${returnToken}`);
       }
@@ -68,8 +69,6 @@ const signIn2 = () => {
       // Handle fetch error
       console.error("Fetch error:", error);
     }
-
-    setLoading(false);
   });
 
   return (

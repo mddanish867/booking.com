@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useGetUserByEmailMutation } from "../../Api/authApi";
 import apiResponse from "../../Interfaces/apiResponse";
@@ -13,8 +12,6 @@ export type SignFormData = {
 
 const Signin = () => {
   const [isEmailExists] = useGetUserByEmailMutation();
-
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   // generate token
@@ -44,26 +41,19 @@ const Signin = () => {
   } = useForm<SignFormData>();
 
   const onSubmit = handleSubmit(async (data) => {
-    setLoading(true);
     try {
-      const response: apiResponse = await isEmailExists({ email: data.email });
-      if (response.error.originalStatus === 200) {
-        navigate(`/signin2?email=${data.email}&token=${returnToken}`);
-      } else {
-        // Proceed with registration
-        //toastNotify("Registration successful! Please login to continue!");
-        navigate(`/register?email=${data.email}&token=${returnToken}`);
-      }
+        const response: apiResponse = await isEmailExists({ email: data.email });
+        if (response.data && response.data.status === 200
+        ) {
+            navigate(`/signin2?email=${data.email}&token=${returnToken}`);
+        } else {
+            navigate(`/register?email=${data.email}&token=${returnToken}`);
+        }
     } catch (error) {
-      // Handle fetch error
-      console.error("Fetch error:", error);
-      // Redirect to registration page
-      navigate(`/register?email=${data.email}&token=${returnToken}`);
+        console.error("Fetch error:", error);
+        navigate(`/register?email=${data.email}&token=${returnToken}`);
     }
-
-    setLoading(false);
-  });
-
+});
   return (
     <>
       <Header/>
