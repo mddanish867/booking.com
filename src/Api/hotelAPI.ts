@@ -1,9 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const hotelApi = createApi({
   reducerPath: "addHotelApi",
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: 'https://localhost:7151/api/' ,
+  baseQuery: fetchBaseQuery({
+    baseUrl: "https://localhost:7151/api/",
     // Authorization
     // prepareHeaders: (headers: Headers, api) => {
     //   const token = localStorage.getItem("token");
@@ -27,10 +27,20 @@ const hotelApi = createApi({
       }),
       providesTags: ["AddHotel"],
     }),
+    // upload images
+    uploadHotelImage: builder.mutation({
+      query: (data) => ({
+        url: "Images/upload",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["AddHotel"],
+    }),
   }),
 });
 export const {
-useAddHotelMutation,useGetHotelByIdQuery
-  
- } = hotelApi;
- export default hotelApi;
+  useAddHotelMutation,
+  useGetHotelByIdQuery,
+  useUploadHotelImageMutation,
+} = hotelApi;
+export default hotelApi;

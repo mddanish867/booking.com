@@ -1,6 +1,6 @@
 
 
-function MainLoader({ type = "primary", size = 100 }) {
+function MainLoader({ type = "warning", size = 100 }) {
   return (
     <div
     style={{

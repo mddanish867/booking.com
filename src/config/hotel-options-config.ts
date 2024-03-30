@@ -26,3 +26,4 @@ export const hotelTypes = [
     "Spa",
     "Fitness Center",
   ];
+  export const starRating = ["1", "2", "3", "4", "5"];

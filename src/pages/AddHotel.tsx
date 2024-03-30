@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { hotelFacilities, hotelTypes } from "../config/hotel-options-config";
+import { hotelFacilities, hotelTypes, starRating } from "../config/hotel-options-config";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import inputHelper from "../Helper/inputHelper";
-import { useAddHotelMutation } from "../Api/hotelAPI";
+import { useAddHotelMutation, useUploadHotelImageMutation } from "../Api/hotelAPI";
 import { useNavigate } from "react-router-dom";
 
-const Rating = ["1", "2", "3", "4", "5"];
+
 const loggedInUser = sessionStorage.getItem("user-id");
 function getDateFromDateObject(date: Date): string {
   // Get the individual components of the date
@@ -27,8 +27,8 @@ const menuItemData = {
   country: "",
   description: "",
   pricePerNight: "",
-  starRating: Rating[0],
-  facilities: hotelFacilities[0],
+  starRating: starRating,
+  facilities: hotelFacilities,
   type: hotelTypes[0],  
   adultCount: "",
   childCount: "",
@@ -38,40 +38,44 @@ const menuItemData = {
 
 const AddHotel = () => {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
-  //const [imageToStore, setImageToStore] = useState<any>();
+  const [imageToStore, setImageToStore] = useState<File[]>([]);
   const [menuItemInputs, setMenuItemInputs] = useState(menuItemData);
   const [loading, setLoading] = useState(false);
   const [addHotelMutation] = useAddHotelMutation();
+  const [uploadImage] = useUploadHotelImageMutation();
  const navigate = useNavigate();
-  // global url
-  var blobUrl = '';
-  var filename = '';
-  var convertedFile ;
+ 
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePreviewImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages((prevImages) => [...prevImages, ...previews]);
-    filename = files[0].name;
-    blobUrl = previewImages[0];
+   const previews = files.map((file) => URL.createObjectURL(file));
+    setPreviewImages((prevImages) => [...prevImages, ...previews]);   
+  
   };
 
- 
-  function blobUrlToFile(blobUrl:any, filename:any) {
-    return fetch(blobUrl)
-      .then(response => response.blob())
-      .then(blob => new File([blob], filename));
+ const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = e.target.files; // Get the files directly from the event
+  handlePreviewImage(e);
+  if (!files || files.length === 0) {
+    return; // No files selected, return early
+  }  
+  const formData = new FormData();  
+  // Append each file to the formData object
+  for (let i = 0; i < files.length; i++) {
+    formData.append(`imageFiles`, files[i]); // No need to specify an index in the FormData key
   }
+  try {
+    const result = await uploadImage(formData); // Send the formData object to the server
+    if(result){
+      
+    } // Handle the result if necessary
+  } catch (error) {
+    console.error('Error uploading images:', error);
+  }
+};
+
   
   
-  blobUrlToFile(blobUrl, filename)
-    .then(file => {
-      convertedFile=file;    
-    
-    })
-    .catch(error => {
-      console.error('Error converting blob URL to file:', error);
-    });
 
   
   const removeImage = (index: number) => {
@@ -90,6 +94,18 @@ const AddHotel = () => {
     setMenuItemInputs(tempData);
   };
 
+  // Method to handle checkbox
+  const handleFacilityChange = (e: React.ChangeEvent<HTMLInputElement>, facility: string) => {
+    const isChecked = e.target.checked;
+    setMenuItemInputs(prevInputs => {
+      if (isChecked) {
+        return { ...prevInputs, facilities: [...prevInputs.facilities, facility] };
+      } else {
+        return { ...prevInputs, facilities: prevInputs.facilities.filter(item => item !== facility) };
+      }
+    });
+  };
+
   // Submit button functionality
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -101,7 +117,7 @@ const AddHotel = () => {
     // }
 
     const formData = new FormData();
-
+    
     formData.append("Name", menuItemInputs.name);
     formData.append("Description", menuItemInputs.description);
     formData.append("City", menuItemInputs.city);
@@ -110,11 +126,12 @@ const AddHotel = () => {
     formData.append("AdultCount", menuItemInputs.adultCount);
     formData.append("ChildCount", menuItemInputs.childCount);
     formData.append("PricePerNight", menuItemInputs.pricePerNight);
-    formData.append("StarRating", menuItemInputs.starRating);
-    formData.append("HotelFacilities", menuItemInputs.facilities);
+    formData.append("StarRating", menuItemInputs.starRating.toString());
+    formData.append("HotelFacilities", menuItemInputs.facilities.toString());
     formData.append("UserId",menuItemInputs.userId??"")
-    formData.append("LastUpdated",menuItemInputs.lastUpdated)
-    //if (previewImages) formData.append("ImageUrls", imageToStore);
+    formData.append("LastUpdated",menuItemInputs.lastUpdated)   
+    
+   
 
     let response = await addHotelMutation(formData);
     // toastNotify("Menu Item created successfully", "success");
@@ -234,14 +251,15 @@ const AddHotel = () => {
             Rating:
           </label>
           <select
+          
             required
-            name="startRating"
+            name="starRating"
             value={menuItemInputs.starRating}
             onChange={handleMenuItemInput}
             className="w-full px-4 py-2 border rounded-md focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
           >
             <option value="">Select rating</option>
-            {Rating.map((rating,index) => (
+            {starRating.map((rating,index) => (
               <option value={rating} key={index}>{rating}</option>
             ))}
           </select>
@@ -257,11 +275,11 @@ const AddHotel = () => {
                 key={facility}
                 className="text-sm flex items-center gap-1 text-gray-700"
               >
-                <input
-                  required
-                  name="facilities"
-                  value={menuItemInputs.facilities}
-                  onChange={handleMenuItemInput}
+                <input      
+                        
+                        name={facility}
+                        checked={menuItemInputs.facilities.includes(facility)}
+                        onChange={(e) => handleFacilityChange(e, facility)}
                   type="checkbox"
                   className="mr-2 focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
                 />
@@ -280,9 +298,9 @@ const AddHotel = () => {
               <label
                 key={type}
                 className={`cursor-pointer ${
-                  type === ""
-                    ? "border border-red-500 text-blue"
-                    : "bg-blue-200"
+                 menuItemInputs.type === type
+                    ? " bg-blue-200"
+                    : "bg-zinc-100"
                 } text-sm text-center rounded-full px-4 py-2 font-semibold`}
                 style={{ borderRadius: "0.375rem" }}
               >

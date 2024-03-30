@@ -31,8 +31,8 @@ const MyHotels = () => {
           </Link>
         </span>
         {!isLoading ? (
-          <div className="grid grid-cols-1 gap-8">
-            {dataArray.map((hotel: any, index: number) => (
+          <div className="grid grid-cols-1 gap-8 xl:grid-cols-1 lg:grid-col-1 md:grid-cols-1 sm:grid-col-1">
+            {data.map((hotel: any, index: number) => (
               <div
                 key={index}
                 data-testid="hotel-card"
