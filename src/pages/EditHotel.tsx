@@ -9,13 +9,14 @@ import Header from "../components/Header";
 import inputHelper from "../Helper/inputHelper";
 import {
   useAddHotelMutation,
+  useGetHotelByIdQuery,
   useUploadHotelImageMutation,
 } from "../Api/hotelAPI";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import apiResponse from "../Interfaces/apiResponse";
-import toastNotify from "../Helper/toastNotify";
+import MainLoader from "../Helper/MainLoader";
 
-var loggedInUser = sessionStorage.getItem("user-id");
+const loggedInUser = sessionStorage.getItem("user-id");
 function getDateFromDateObject(date: Date): string {
   // Get the individual components of the date
   const year = date.getFullYear();
@@ -42,16 +43,45 @@ const menuItemData = {
   childCount: "",
   userId: loggedInUser,
   lastUpdated: formattedDate,
+  imegUrls: "",
 };
 
-const AddHotel = () => {
+const EditHotel = () => {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
-  // const [imageToStore, setImageToStore] = useState<File[]>([]);
+  const [imageToStore, setImageToStore] = useState<string[]>([]);
   const [menuItemInputs, setMenuItemInputs] = useState(menuItemData);
-  const [loading, setLoading] = useState(false);
   const [addHotelMutation] = useAddHotelMutation();
   const [uploadImage] = useUploadHotelImageMutation();
   const navigate = useNavigate();
+  const { hotelId } = useParams();
+  const { data, isLoading, isError } = useGetHotelByIdQuery({
+    hotelId: hotelId,
+  });
+
+  if (isLoading) {
+    return <MainLoader />;
+  }
+  if (isError || !data) {
+    return <div>Error occurred</div>;
+  }
+
+  if (data && data.length > 0 && data[0].images && data[0].images.length > 0) {
+    const images = data[0].images[0]; // Accessing the first element of the images array
+    if (images) {
+      const cleanedUrls = images
+        .slice(2, -2) // Remove the square brackets and quotes
+        .split('","'); // Split the string by the comma
+
+      // Check if the state is already set to the cleaned URLs before updating
+      if (!imageToStore || imageToStore.length !== cleanedUrls.length) {
+        setImageToStore(cleanedUrls);
+      }
+    } else {
+      console.log("No images found in data.");
+    }
+  } else {
+    console.log("No data found.");
+  }
 
   const handlePreviewImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -66,14 +96,15 @@ const AddHotel = () => {
       return; // No files selected, return early
     }
     const formData = new FormData();
+    // Append each file to the formData object
     for (let i = 0; i < files.length; i++) {
-      formData.append(`imageFiles`, files[i]);
+      formData.append(`imageFiles`, files[i]); // No need to specify an index in the FormData key
     }
     try {
       const response: apiResponse = await uploadImage(formData); // Send the formData object to the server
       if (response && response.data?.images) {
         for (let i = 0; i < response.data.images.length; i++) {
-          newFormData.push(response.data.images[i]);      
+          newFormData.push(response.data.images[i]);
         }
       }
     } catch (error) {
@@ -121,7 +152,6 @@ const AddHotel = () => {
   // Submit button functionality
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
     // if (!imageToStore && !id) {
     //   toastNotify("Please upload an image", "error");
     //   setLoading(false);
@@ -139,33 +169,23 @@ const AddHotel = () => {
     formData.append("ChildCount", menuItemInputs.childCount);
     formData.append("PricePerNight", menuItemInputs.pricePerNight);
     formData.append("StarRating", menuItemInputs.starRating.toString());
-    // Append each facility separately
-    menuItemInputs.facilities.forEach((facility) => {
-      formData.append("HotelFacilities", facility);
-    });
-    formData.append("UserId", loggedInUser ?? "");
+    formData.append("HotelFacilities", menuItemInputs.facilities.toString());
+    formData.append("UserId", menuItemInputs.userId ?? "");
     formData.append("LastUpdated", menuItemInputs.lastUpdated);
-    // Append each images separately
-    newFormData.forEach((imageUrls) => {
-      formData.append("Images", imageUrls);
-    });
-    //formData.append("Images", JSON.stringify(newFormData));
+    formData.append("Images", JSON.stringify(newFormData));
 
     let response = await addHotelMutation(formData);
+    // toastNotify("Menu Item created successfully", "success");
 
     if (response) {
-      setLoading(false);
-      toastNotify("Menu Item created successfully", "success");
       navigate("/");
     }
-
-    setLoading(false);
   };
 
   return (
     <>
       <Header />
-      <h1 className="text-2xl font-bold text-center mt-5 mb-3">Add Hotel</h1>
+      <h1 className="text-2xl font-bold text-center mt-5 mb-3">Edit Hotel</h1>
       <form
         method="post"
         encType="multipart/form-data"
@@ -179,7 +199,7 @@ const AddHotel = () => {
           <input
             required
             name="name"
-            value={menuItemInputs.name}
+            value={menuItemInputs.name || data[0].name}
             onChange={handleMenuItemInput}
             type="text"
             className="w-full px-4 py-2 border rounded-md focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
@@ -193,7 +213,7 @@ const AddHotel = () => {
           <input
             required
             name="country"
-            value={menuItemInputs.country}
+            value={menuItemInputs.country || data[0].country}
             onChange={handleMenuItemInput}
             type="text"
             className="w-full px-4 py-2 border rounded-md focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
@@ -207,7 +227,7 @@ const AddHotel = () => {
           <input
             required
             name="city"
-            value={menuItemInputs.city}
+            value={menuItemInputs.city || data[0].city}
             onChange={handleMenuItemInput}
             type="text"
             className="w-full px-4 py-2 border rounded-md focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
@@ -220,7 +240,7 @@ const AddHotel = () => {
           <textarea
             required
             name="description"
-            value={menuItemInputs.description}
+            value={menuItemInputs.description || data[0].description}
             onChange={handleMenuItemInput}
             className="w-full px-4 py-2 border rounded-md focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
           />
@@ -232,7 +252,7 @@ const AddHotel = () => {
           <input
             required
             name="pricePerNight"
-            value={menuItemInputs.pricePerNight}
+            value={menuItemInputs.pricePerNight || data[0].pricePerNight}
             onChange={handleMenuItemInput}
             type="number"
             className="w-full px-4 py-2 border rounded-md focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
@@ -245,7 +265,7 @@ const AddHotel = () => {
           <input
             required
             name="adultCount"
-            value={menuItemInputs.adultCount}
+            value={menuItemInputs.adultCount || data[0].adultCount}
             onChange={handleMenuItemInput}
             type="number"
             className="w-full px-4 py-2 border rounded-md focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
@@ -258,7 +278,7 @@ const AddHotel = () => {
           <input
             required
             name="childCount"
-            value={menuItemInputs.childCount}
+            value={menuItemInputs.childCount || data[0].childCount}
             onChange={handleMenuItemInput}
             type="number"
             className="w-full px-4 py-2 border rounded-md focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
@@ -271,13 +291,13 @@ const AddHotel = () => {
           <select
             required
             name="starRating"
-            value={menuItemInputs.starRating}
+            value={menuItemInputs.starRating || data[0].starRating}
             onChange={handleMenuItemInput}
             className="w-full px-4 py-2 border rounded-md focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
           >
             <option value="">Select rating</option>
             {starRating.map((rating, index) => (
-              <option value={rating} key={index}>
+              <option value={rating || data[0].starRating} key={index}>
                 {rating}
               </option>
             ))}
@@ -295,6 +315,7 @@ const AddHotel = () => {
                 className="text-sm flex items-center gap-1 text-gray-700"
               >
                 <input
+                  value={data[0].hotelFacilities[0]}
                   name={facility}
                   checked={menuItemInputs.facilities.includes(facility)}
                   onChange={(e) => handleFacilityChange(e, facility)}
@@ -323,7 +344,7 @@ const AddHotel = () => {
                 <input
                   required
                   name="type"
-                  value={type}
+                  value={type || data[0].type}
                   onChange={handleMenuItemInput}
                   type="radio"
                   className="hidden focus:border-blue-600 focus:bg-blue-600 focus:border-2 outline-none border-zinc-300"
@@ -345,36 +366,35 @@ const AddHotel = () => {
             className="w-full border rounded-md p-2 focus:border-blue-600 focus:border-2 outline-none border-zinc-300"
           />
         </div>
-
         <div className="flex flex-wrap mb-4">
-          {previewImages.map((preview, index) => (
-            <div
-              key={index}
-              className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 mb-2 px-2"
-            >
-              <img
-                src={preview}
-                alt={`Preview ${index}`}
-                className="w-full h-auto object-cover rounded-md"
-              />
-              <button
-                type="button"
-                onClick={() => removeImage(index)}
-                className="bg-red-500 text-white px-2 py-1 rounded-md w-full mt-1"
+          {(imageToStore.length === 0 ? previewImages : imageToStore).map(
+            (image, index) => (
+              <div
+                key={index}
+                className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 mb-2 px-2"
               >
-                Remove
-              </button>
-            </div>
-          ))}
+                <img
+                  src={image}
+                  alt={`Preview ${index}`}
+                  className="w-full h-auto object-cover rounded-md"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="bg-red-500 text-white px-2 py-1 rounded-md w-full mt-1"
+                >
+                  Remove
+                </button>
+              </div>
+            )
+          )}
         </div>
-
         <span className="flex justify-end">
           <button
             type="submit"
             className="container bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-xl disabled:bg-blue-700 max-w-[50%]"
-            // disabled={!Object.keys(errors).length ? false : true}
           >
-            Add Hotel
+            Update Hotel
           </button>
         </span>
       </form>
@@ -383,4 +403,4 @@ const AddHotel = () => {
   );
 };
 
-export default AddHotel;
+export default EditHotel;

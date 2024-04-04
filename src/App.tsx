@@ -11,6 +11,8 @@ import AddHotel from "./pages/AddHotel";
 import LoggedInPopup from "./pages/Account/LogedInPopup";
 import { useEffect, useState } from "react";
 import MyHotels from "./pages/MyHotels";
+import EditHotel from "./pages/EditHotel";
+import Search from "./pages/Search";
 
 function App() {   
  
@@ -53,7 +55,18 @@ function App() {
           <Route path="/addhotel" element={<AddHotel />} />
           <Route path="/detailssection" element={<DetailsSection />} />
           <Route path="/myhotels" element={<MyHotels />} />
-
+          <Route
+              path="/edit-hotel/:hotelId"
+              element={                
+                  <EditHotel />                
+              }
+            />
+            <Route
+              path="/searchresults"
+              element={                
+                  <Search />                
+              }
+            />
         </Routes>
       </BrowserRouter>
     </>

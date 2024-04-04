@@ -1,5 +1,6 @@
 export interface hotelModel {
-  userId: number;
+  id:string
+  userId: string;
   name: string;
   city: string;
   country: string;
@@ -11,5 +12,5 @@ export interface hotelModel {
   starRating: number; // Can be a float like 3.5, 4.0, etc.
   lastUpdated: Date;
   hotelFacilities: string[]; // List of facilities available in the hotel
-  imageUrls: string[]; // URLs of images associated with the hotel
+  images: string[]; // URLs of images associated with the hotel
 }

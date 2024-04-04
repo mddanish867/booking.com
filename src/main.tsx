@@ -4,9 +4,12 @@ import App from './App.tsx'
 import './index.css'
 import store from './Storage/store.ts'
 import { Provider } from 'react-redux';
+import { SearchContextProvider } from './context/SearchContext.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render( 
   <Provider store={store}>
+    <SearchContextProvider>
     <App />
+    </SearchContextProvider>    
   </Provider>,
 )
