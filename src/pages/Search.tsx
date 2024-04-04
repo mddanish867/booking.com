@@ -11,6 +11,7 @@ import Pagination from "./Pagination";
 import StarRatingFilter from "./StarRatingFilter";
 import HotelTypesFilter from "../components/HotelTypesFilter";
 import FacilitiesFilter from "../components/FacilitiesFilter";
+import PriceFilter from "../components/PriceFilter";
 var dataArray = [];
 const Search = () => {
   const search = useSearchContext();
@@ -20,6 +21,8 @@ const Search = () => {
   const [selectedHotelTypes, setSelectedHotelTypes] = useState<string[]>([]);
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState<string>("");
+  const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
+
   const searchParams = {
     destination: search.destination,
     //checkIn: search.checkIn.toISOString(),
@@ -29,7 +32,8 @@ const Search = () => {
     stars: selectedStars,
     types: selectedHotelTypes,
     facilities: selectedFacilities,
-    sortOption,
+    maxPrice:selectedPrice?.toFixed(),
+    sortOption:sortOption,
   };
   const { data, isError } = useSearchHotelsQuery(searchParams);
 
@@ -93,6 +97,12 @@ const Search = () => {
               Filter by:
             </h3>
 
+            <PriceFilter
+            selectedPrice={selectedPrice}
+            onChange={(value?: number) => setSelectedPrice(value)}
+            data={data}
+          />
+
             <StarRatingFilter
               selectedStars={selectedStars}
               onChange={handleStarsChange}
@@ -106,12 +116,8 @@ const Search = () => {
             <FacilitiesFilter
               selectedFacilities={selectedFacilities}
               onChange={handleFacilityChange}
-            />
-            {/* 
-          <PriceFilter
-            selectedPrice={selectedPrice}
-            onChange={(value?: number) => setSelectedPrice(value)}
-          /> */}
+            />            
+          
           </div>
         </div>
 
@@ -128,11 +134,11 @@ const Search = () => {
             className="p-2 border rounded-md max-w-[30%]"
           >
             <option value="">Sort By</option>
-            <option value="starRating">Star Rating</option>
-            <option value="pricePerNightAsc">
+            <option value="starrating">Star Rating</option>
+            <option value="pricepernightasc">
               Price Per Night (low to high)
             </option>
-            <option value="pricePerNightDesc">
+            <option value="pricepernightdesc">
               Price Per Night (hight to low)
             </option>
           </select>

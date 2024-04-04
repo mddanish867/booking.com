@@ -71,6 +71,8 @@ const hotelApi = createApi({
         types,
         stars,
         facilities,
+        maxPrice,
+        sortOption
       }) => {
         // Construct the base URL
         // Construct the base URL
@@ -106,10 +108,14 @@ const hotelApi = createApi({
           facilities.forEach((facility:any) => {
             url += `selectedFacilities=${encodeURIComponent(facility)}&`;
           });
+        }    
+        
+        if (maxPrice) {
+          url += `maxPrice=${maxPrice}&`;
         }
-        // if (selectedFacilities && selectedFacilities.length > 0) {
-        //   url += `selectedFacilities=${selectedFacilities.join(",")}&`;
-        // }
+        if (sortOption) {
+          url += `sortOption=${encodeURIComponent(sortOption)}&`;
+        }
 
         // Remove the trailing '&' if present
         url = url.replace(/&$/, "");
