@@ -72,7 +72,7 @@ const hotelApi = createApi({
         stars,
         facilities,
         maxPrice,
-        sortOption
+        sortOption,
       }) => {
         // Construct the base URL
         // Construct the base URL
@@ -90,13 +90,13 @@ const hotelApi = createApi({
         }
         if (types && types.length > 0) {
           // Append each type as a separate query parameter
-          types.forEach((type:any) => {
+          types.forEach((type: any) => {
             url += `types=${encodeURIComponent(type)}&`;
           });
         }
         if (stars && stars.length > 0) {
           // Append each rating as a separate query parameter
-          stars.forEach((ratings:any) => {
+          stars.forEach((ratings: any) => {
             url += `starRatings=${encodeURIComponent(ratings)}&`;
           });
         }
@@ -105,11 +105,11 @@ const hotelApi = createApi({
         // }
         if (facilities && facilities.length > 0) {
           // Append each type as a separate query parameter
-          facilities.forEach((facility:any) => {
+          facilities.forEach((facility: any) => {
             url += `selectedFacilities=${encodeURIComponent(facility)}&`;
           });
-        }    
-        
+        }
+
         if (maxPrice) {
           url += `maxPrice=${maxPrice}&`;
         }

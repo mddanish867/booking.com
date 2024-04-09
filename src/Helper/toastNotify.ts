@@ -1,7 +1,7 @@
-import { toast, ToastOptions } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const toastNotify = (message: string, type: ToastOptions["type"]) => {
+const toastNotify = (message: string, type: "success" | "error" | "info" | "warning") => {
   toast(message, {
     type: type,
     position: "top-right",
@@ -10,8 +10,7 @@ const toastNotify = (message: string, type: ToastOptions["type"]) => {
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    progress: undefined,
-    theme: "dark"
+    progress: undefined
   });
 };
 

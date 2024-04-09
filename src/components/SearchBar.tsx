@@ -1,7 +1,9 @@
 import { FormEvent, useState } from "react";
 import { useSearchContext } from "../context/SearchContext";
-import { MdTravelExplore } from "react-icons/md";
+import { LuBedDouble } from "react-icons/lu";
 import DatePicker from "react-datepicker";
+import { LuCalendarDays } from "react-icons/lu";
+import { LiaUser } from "react-icons/lia";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 
@@ -37,7 +39,7 @@ const SearchBar = () => {
       className="-mt-8 mx-4 p-1 flex flex-col md:flex-row bg-orange-300 rounded-md shadow-md"
     >
       <div className="flex items-center bg-white p-2 mr-2 w-full md:w-96 rounded">
-        <MdTravelExplore size={25} className="mr-2" />
+        <LuBedDouble size={25} className="ml-3 mr-2" />
         <input
           placeholder="Where are you going?"
           className=" text-md w-full focus:outline-none h-10"
@@ -47,6 +49,8 @@ const SearchBar = () => {
       </div>
 
       <div className="flex flex-col md:flex-row bg-white p-2 gap-2 w-full md:w-80 rounded">
+        <LuCalendarDays size={40} className="ml-3" />
+
         <DatePicker
           selected={checkIn}
           onChange={(date) => setCheckIn(date as Date)}
@@ -61,7 +65,7 @@ const SearchBar = () => {
         <DatePicker
           selected={checkOut}
           onChange={(date) => setCheckOut(date as Date)}
-          selectsStart
+          selectsEnd
           startDate={checkIn}
           endDate={checkOut}
           minDate={minDate}
@@ -72,6 +76,8 @@ const SearchBar = () => {
       </div>
 
       <div className="flex flex-col md:flex-row bg-white p-2 gap-2 w-full md:w-80 md:ml-2 rounded">
+        <LiaUser size={35} className="ml-3" />
+
         <label className="flex items-center">
           Adults:
           <input

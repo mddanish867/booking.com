@@ -12,14 +12,14 @@ const SearchResultsCard = ({ hotel }: Props) => {
 
   return (
     <>
-      <div className="w-[90%] grid grid-cols-1 xl:grid-cols-[2fr_3fr] border border-slate-200 rounded-lg p-10 gap-8">
+      <div className="w-[95%] grid grid-cols-1 xl:grid-cols-[2fr_3fr] border border-slate-200 rounded-lg p-10 gap-8">
         <div className="w-[200px] h-[200px]">
           <img
             src={hotel.images[0]}
             className="w-full h-full object-cover object-center"
           />
         </div>
-        <div className="grid grid-rows-[1fr_2fr_1fr] -mt-8">
+        <div className="grid grid-rows-[1fr_2fr_1fr] -mt-8 ">
           <div className="flex flex-1 items-center">
             <Link
               to={`/detail/${hotel.id}`}
@@ -29,8 +29,8 @@ const SearchResultsCard = ({ hotel }: Props) => {
             </Link>
             <div className="flex items-center mx-2">
               <span className="flex">
-                {Array.from({ length: hotel.starRating }).map(() => (
-                  <AiFillStar className="fill-yellow-400" />
+                {Array.from({ length: hotel.starRating }).map((_, index) => (
+                  <AiFillStar className="fill-yellow-400" key={index}/>
                 ))}
               </span>
               <span className="ml-1 text-sm">{hotel.type}</span>
@@ -43,8 +43,8 @@ const SearchResultsCard = ({ hotel }: Props) => {
 
           <div className="grid grid-cols-2 items-end whitespace-nowrap">
             <div className="flex gap-1 items-center">
-              {hotel.hotelFacilities.slice(0, 3).map((facility) => (
-                <span className="bg-slate-300 p-2 rounded-lg font-bold text-xs whitespace-nowrap">
+              {hotel.hotelFacilities.slice(0, 3).map((facility,index) => (
+                <span className="bg-slate-100 p-2 rounded-lg font-semibold text-xs whitespace-nowrap" key={index}>
                   {facility}
                 </span>
               ))}
@@ -53,14 +53,13 @@ const SearchResultsCard = ({ hotel }: Props) => {
                   `+${hotel.hotelFacilities.length - 3} more`}
               </span>
             </div>
-            <div className="flex flex-col items-end gap-1">
+            <div className="flex flex-col items-end gap-1 -mx-5">
               <span className="font-bold">
-                £{hotel.pricePerNight} per night
+              ₹{hotel.pricePerNight} per night
               </span>
-              <Link
-              target="_blank"
+              <Link             
                 to={`/detail/${hotel.id}`}
-                className="bg-blue-600 text-white h-full p-2 font-semibold max-w-fit hover:bg-blue-700 rounded"
+                className="bg-blue-600 text-white h-full p-2 font-semibold max-w-fit hover:bg-blue-700 rounded "
               >
                 See availability
               </Link>

@@ -2,7 +2,7 @@ export default interface apiResponse {
   data?: {
     status?: number;
     isSuccess?: boolean;
-    jwtToken?: Array<string>;
+    jwtToken?: string;
     errorMessage?: Array<string>;
     user_id?: string;
     images?:[string]; // Add message property

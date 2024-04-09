@@ -1,13 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const isLoggedIn = sessionStorage.getItem("jwtToken");
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
 
+  
+  useEffect(() => {
+    // method to decode the token
+    const jwtToken = sessionStorage.getItem("jwtToken");
+    if (jwtToken) {
+      const tokenParts = jwtToken.split(".");
+      const payload = JSON.parse(atob(tokenParts[1]));
+      setCurrentUser(payload.email);
+    } else {
+      console.log("No JWT token found in sessionStorage.");
+    }
+   
+  },); // Empty dependency array ensures this effect runs only once
+  
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -69,7 +83,7 @@ const Header = () => {
                 >
                   <div className="px-4 py-3 text-sm text-gray-900">
                     <div className="font-medium text-yellow-600">Genius Level 1</div>
-                    <div className="truncate">danish@gmail.com</div>
+                    <div className="truncate">{currentUser}</div>
                   </div>
                   <ul className="py-2 text-sm text-gray-700">
                     <li>
@@ -78,9 +92,9 @@ const Header = () => {
                       </Link>
                     </li>
                     <li>
-                      <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                        Settings
-                      </a>
+                      <Link to="/booking" className="block px-4 py-2 hover:bg-gray-100">
+                        My Booking
+                      </Link>
                     </li>
                     <li>
                       <a href="#" className="block px-4 py-2 hover:bg-gray-100">

@@ -73,7 +73,7 @@ const AddHotel = () => {
       const response: apiResponse = await uploadImage(formData); // Send the formData object to the server
       if (response && response.data?.images) {
         for (let i = 0; i < response.data.images.length; i++) {
-          newFormData.push(response.data.images[i]);      
+          newFormData.push(response.data.images[i]);
         }
       }
     } catch (error) {
