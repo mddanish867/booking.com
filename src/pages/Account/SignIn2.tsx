@@ -52,15 +52,7 @@ const signIn2 = () => {
         // Extract JWT token from the response
         const jwtToken = response.data.jwtToken;
         const userId = response.data.user_id;
-        // Save JWT token and userId in session storage
-        if (jwtToken && userId) {
-          // Save JWT token and userId in session storage
-          sessionStorage.setItem("jwtToken", jwtToken);
-          sessionStorage.setItem("user-id", userId);
-        } else {
-          // Handle the case where jwtToken or userId is undefined
-          console.error("jwtToken or userId is undefined");
-        }
+       
         // Set JWT token in a cookie
         document.cookie = `jwtToken=${jwtToken}; Secure; SameSite=None;`;
         document.cookie = `user-id=${userId}; Secure; SameSite=None;`;

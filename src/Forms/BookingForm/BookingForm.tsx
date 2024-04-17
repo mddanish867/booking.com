@@ -3,8 +3,9 @@ import { useForm } from "react-hook-form";
 import SignInDialogComponent from "../../pages/Account/SignInDialogComponent";
 import { useGetUserAddressQuery } from "../../Api/authApi";
 import MainLoader from "../../Helper/MainLoader";
+import Cookies from 'js-cookie';
 
-var loggedInUser = sessionStorage.getItem("user-id");
+var loggedInUser = Cookies.get("user-id");
 type Props = {
   currentUser: string;
   pricePerNight: number;
@@ -22,7 +23,7 @@ const BookingForm = ({ pricePerNight, numberOfNights }: Props) => {
   };
 
   const { data, isLoading, isError } = useGetUserAddressQuery(searchParams);
-  console.log(data);
+  
   const { handleSubmit, register } = useForm<BookingFormData>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -49,15 +50,15 @@ const BookingForm = ({ pricePerNight, numberOfNights }: Props) => {
       //   onSubmit={handleSubmit(onSubmit)}
       className="grid grid-cols-1 gap-4 rounded-lg border border-slate-300 p-5 mx-2"
     >
-      <span className="text-3xl font-semibold">Confirm Your Details</span>
+      <span className="text-xl font-semibold">Confirm Your Details</span>
       <button
-        className="bg-blue-500 hover:bg-blue-600 items-start md:max-w-[20%] text-white"
+        className="bg-blue-500 h-10 hover:bg-blue-600 items-start md:max-w-[20%] text-white"
         onClick={handleOpenDialog}
       >
         Add New Address
       </button>
-      {dataArray.map((userAddress: BookingFormData) => (
-        <div className="grid grid-cols-2 gap-6">
+      {dataArray.map((userAddress: BookingFormData, index:number) => (
+        <div className="grid grid-cols-2 gap-6" key={index}>
           <label className="text-gray-700 text-sm font-bold flex-1">
             First Name
             <input

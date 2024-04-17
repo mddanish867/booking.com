@@ -15,6 +15,8 @@ import EditHotel from "./pages/EditHotel";
 import Search from "./pages/Search";
 import Detail from "./pages/Detail";
 import Booking from "./pages/Booking";
+import Cookies from 'js-cookie';
+
 
 function App() {   
  
@@ -22,7 +24,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("jwtToken");
+    const token = Cookies.get('jwtToken');
+    //const token = sessionStorage.getItem("jwtToken");
     if (token !== null) {
       setIsLoggedIn(token);
     } else {

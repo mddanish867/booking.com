@@ -14,8 +14,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import apiResponse from "../Interfaces/apiResponse";
 import toastNotify from "../Helper/toastNotify";
+import Cookies from 'js-cookie';
 
-var loggedInUser = sessionStorage.getItem("user-id");
+var loggedInUser = Cookies.get("user-id");
 function getDateFromDateObject(date: Date): string {
   // Get the individual components of the date
   const year = date.getFullYear();

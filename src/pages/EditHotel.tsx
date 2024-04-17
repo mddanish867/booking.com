@@ -15,8 +15,10 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import apiResponse from "../Interfaces/apiResponse";
 import MainLoader from "../Helper/MainLoader";
+import Cookies from 'js-cookie';
 
-const loggedInUser = sessionStorage.getItem("user-id");
+
+const loggedInUser = Cookies.get("user-id");
 function getDateFromDateObject(date: Date): string {
   // Get the individual components of the date
   const year = date.getFullYear();

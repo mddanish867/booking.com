@@ -6,8 +6,10 @@ import { useGetHotelByIdQuery } from "../Api/hotelAPI";
 import MainLoader from "../Helper/MainLoader";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Cookies from 'js-cookie';
+
 const MyHotels = () => {
-  const loggedInUser = sessionStorage.getItem("user-id");
+  const loggedInUser = Cookies.get("user-id");
 
   const { data, isLoading, isError } = useGetHotelByIdQuery({
     userId: loggedInUser,

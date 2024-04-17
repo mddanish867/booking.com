@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAddUserAddressMutation } from "../../Api/authApi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Cookies from 'js-cookie';
 
 const newAddressData = {
   firstName: "",
@@ -13,7 +14,7 @@ const AddNewAddress = () => {
   const [addUserAddressMutation] = useAddUserAddressMutation();
   const [newAddressInputs, setNewAddressInputs] = useState(newAddressData);
   const [loggedInUserId, setLoggedInUserId] = useState<string | undefined>(
-    sessionStorage.getItem("user-id") ?? undefined
+    Cookies.get("user-id") ?? undefined
   );
   const [isDefault, setIsDefault] = useState(false);
   const [loading, setLoading] = useState(false);

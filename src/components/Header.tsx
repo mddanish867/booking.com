@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
+
 
 const Header = () => {
-  const isLoggedIn = sessionStorage.getItem("jwtToken");
+  const isLoggedIn = Cookies.get('jwtToken');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -11,15 +13,12 @@ const Header = () => {
   
   useEffect(() => {
     // method to decode the token
-    const jwtToken = sessionStorage.getItem("jwtToken");
+    const jwtToken = Cookies.get('jwtToken');
     if (jwtToken) {
       const tokenParts = jwtToken.split(".");
       const payload = JSON.parse(atob(tokenParts[1]));
       setCurrentUser(payload.email);
-    } else {
-      console.log("No JWT token found in sessionStorage.");
-    }
-   
+    }    
   },); // Empty dependency array ensures this effect runs only once
   
   const toggleDropdown = () => {

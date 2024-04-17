@@ -8,6 +8,9 @@ import BookingDetailsSummary from "../components/BookingDetailsSummary";
 import MainLoader from "../Helper/MainLoader";
 import { useGetHotelByIdQuery } from "../Api/hotelAPI";
 import { hotelModel } from "../Interfaces/hotelModel";
+import Cookies from 'js-cookie';
+
+
 var dataArray = [];
 const Booking = () => {
   const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
@@ -17,15 +20,13 @@ const Booking = () => {
 
   useEffect(() => {
     // method to decode the token
-    const jwtToken = sessionStorage.getItem("jwtToken");
+    const jwtToken = Cookies.get("jwtToken");
     if (jwtToken) {
       const tokenParts = jwtToken.split(".");
       const payload = JSON.parse(atob(tokenParts[1]));
       setCurrentUser(payload.nameid);
-    } else {
-      console.log("No JWT token found in sessionStorage.");
     }
-
+    
     if (search.checkIn && search.checkOut) {
       const nights =
         Math.abs(search.checkOut.getTime() - search.checkIn.getTime()) /

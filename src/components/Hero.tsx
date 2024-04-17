@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
+import Cookies from 'js-cookie';
 
 const Hero = () => {
-  const token = sessionStorage.getItem("jwtToken");
+  const token = Cookies.get('jwtToken');
   return (
     <>
       <div className="bg-blue-800 pb-16 flex flex-col md:flex-row md:items-center">

@@ -24,12 +24,12 @@ const BookingDetailsSummary = ({
         Location:
         {Array.isArray(hotel) ? (
           hotel.map((h: hotelModel) => (
-            <div key={h.id} className="font-semibold">
+            <div key={h.id} className="font-bold text-sm">
               {`${h.name}, ${h.city}, ${h.country}`}
             </div>
           ))
         ) : (
-          <div className="font-semibold">
+          <div className="font-bold text-sm">
             {`${hotel.name}, ${hotel.city}, ${hotel.country}`}
           </div>
         )}
@@ -37,20 +37,20 @@ const BookingDetailsSummary = ({
       <div className="flex justify-between">
         <div>
           Check-in
-          <div className="font-semibold"> {checkIn.toDateString()}</div>
+          <div className="font-bold text-sm"> {checkIn.toDateString()}</div>
         </div>
         <div>
           Check-out
-          <div className="font-semibold"> {checkOut.toDateString()}</div>
+          <div className="font-bold text-sm"> {checkOut.toDateString()}</div>
         </div>
       </div>
       <div className="border-t border-b py-2">
         Total length of stay:
-        <div className="font-semibold">{numberOfNights} nights</div>
+        <div className="font-bold text-sm">{numberOfNights} nights</div>
       </div>
       <div>
         Guests{" "}
-        <div className="font-semibold">
+        <div className="font-bold text-sm">
           {adultCount} adults & {childCount} children
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
-
-import { useLocation, useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSearchContext } from "../../context/SearchContext";
 
 type Props = {
@@ -18,7 +18,7 @@ type GuestInfoFormData = {
 
 const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
   const search = useSearchContext();
-  const isLoggedIn = sessionStorage.getItem("jwtToken");
+  const isLoggedIn = Cookies.get("jwtToken");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -64,7 +64,6 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
       data.adultCount,
       data.childCount
     );
-    navigate(`/hotel/${hotelId}/booking`);
   };
 
   return (
@@ -143,9 +142,9 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
             )}
           </div>
           {isLoggedIn ? (
-            <button className="bg-blue-500 text-white h-full p-2 font-semibold hover:bg-blue-600 text-sm">
+            <Link to={`/hotel/${hotelId}/booking`} target="_blank" className="bg-blue-500 text-center text-white h-full p-2 font-semibold hover:bg-blue-600 text-sm">
               Reserve
-            </button>
+            </Link>
           ) : (
             <button className="bg-blue-500 text-white h-full p-2 font-semibold hover:bg-blue-600 text-sm">
               Sign in to Reserve
