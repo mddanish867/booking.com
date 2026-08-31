@@ -17,8 +17,6 @@ const ResetPassword = () => {
   const token = searchParams.get('token');
   const [resetPaaword] = useRestPasswordMutation();
   const navigate = useNavigate();
-  console.log(email);
-  console.log(token);
 
   const {
     register,
@@ -30,9 +28,9 @@ const ResetPassword = () => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const response: apiResponse = await resetPaaword({
-        email:email,
-        newPassword:data.password,
-        resetPasswordToken:token        
+        email: email,
+        newPassword: data.password,
+        resetPasswordToken: token        
       });
       if (response.error.originalStatus === 200) {        
         navigate(`/signin?token=${(token)}`);
